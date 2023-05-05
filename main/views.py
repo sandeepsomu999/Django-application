@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils import timezone
 from .models import ToDoList, Item
 from .forms import CreateNewList
 # Create your views here.
@@ -21,10 +22,6 @@ def index(response, id):
                 ls.item_set.create(text=txt, complete=False)
             else:
                 print("invalid")
-            # if form.is_valid():
-            #     n = form.cleaned_data["newItem"]
-            #     t = ToDoList(name=n)
-            #     t.save()
 
     return render(response, "main/list.html", {"ls":ls})
 
@@ -39,8 +36,11 @@ def create(response):
             n = form.cleaned_data["name"]
             t = ToDoList(name=n)
             t.save()
-
+            response.user.todolist.add(t)
         return HttpResponseRedirect("/%i" %t.id)
     else:
         form = CreateNewList
     return render(response, "main/create.html", {"form":form})
+
+def view(response):
+    return render(response, "main/view.html", {})
